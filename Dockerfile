@@ -1,18 +1,10 @@
-FROM dremio/dremio-oss:latest
+FROM dremio/dremio-oss
 
-# Set the platform
-FROM --platform=linux/x86_64
-
-# Expose the necessary ports
-EXPOSE 9047  31010 32010 45678
-
+EXPOSE 9047 31010 45678 32010
 ENV DREMIO_JAVA_SERVER_EXTRA_OPTS="-Dpaths.dist=file:///opt/dremio/data/dist"
 
 # Create necessary directories
 RUN mkdir -p /opt/dremio/data/dist
 WORKDIR /opt/dremio
-
-# The entrypoint is already set in the base image, but we can override it if needed
-# ENTRYPOINT ["./bin/dremio-server"]
 
 CMD ["run"]
