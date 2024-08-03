@@ -1,13 +1,21 @@
-FROM dremio/dremio-oss
+FROM dremio/dremio-oss:latest
+
+# Set the platform
+FROM --platform=linux/x86_64
 
 # Expose the necessary ports
-EXPOSE 31010 45678 80
-
+EXPOSE 80 31010 32010 45678
 ENV DREMIO_WEB_PORT=80
-# ENV DREMIO_HOME /opt/dremio
-# ENV DREMIO_PID_DIR /var/run/dremio
-# ENV DREMIO_GC_LOGS_ENABLED="yes"
-# ENV DREMIO_GC_LOG_TO_CONSOLE="yes"
-# ENV DREMIO_LOG_DIR="/var/log/dremio"
+ENV DREMIO_JAVA_SERVER_EXTRA_OPTS="-Dpaths.dist=file:///opt/dremio/data/dist"
 
-ENTRYPOINT ["bin/dremio", "start-fg"]
+# Create necessary directories
+RUN mkdir -p /opt/dremio/data/dist
+
+# Set the working directory
+WORKDIR /opt/dremio
+
+# The entrypoint is already set in the base image, but we can override it if needed
+# ENTRYPOINT ["./bin/dremio-server"]
+
+# The default command can be overridden at runtime
+CMD ["run"]
