@@ -17,5 +17,4 @@ WORKDIR /opt/dremio
 # The entrypoint is already set in the base image, but we can override it if needed
 # ENTRYPOINT ["./bin/dremio-server"]
 
-# The default command can be overridden at runtime
 CMD ["run"]
