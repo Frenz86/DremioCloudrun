@@ -5,27 +5,22 @@ LABEL maintainer=Dremio
 
 ARG DOWNLOAD_URL
 
-RUN \
-  apt-get update \
-  && apt-get install wget -y \
-  && rm -rf /var/lib/apt/lists/* \
-  \
-  && mkdir -p /opt/dremio \
-  && mkdir -p /var/lib/dremio \
-  && mkdir -p /var/run/dremio \
-  && mkdir -p /var/log/dremio \
-  && mkdir -p /opt/dremio/data \
-  \
-  && groupadd --system dremio \
-  && useradd --base-dir /var/lib/dremio --system --gid dremio dremio \
-  && chown -R dremio:dremio /opt/dremio/data \
-  && chown -R dremio:dremio /var/run/dremio \
-  && chown -R dremio:dremio /var/log/dremio \
-  && chown -R dremio:dremio /var/lib/dremio \
-  && wget -q "${DOWNLOAD_URL}" -O dremio.tar.gz \
-  && tar vxfz dremio.tar.gz -C /opt/dremio --strip-components=1 \
-  && rm -rf dremio.tar.gz
+RUN set -ex; \
+    apt-get update && \
+    apt-get install -y --no-install-recommends wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir -p /opt/dremio /var/lib/dremio /var/run/dremio /var/log/dremio /opt/dremio/data && \
+    groupadd --system dremio && \
+    useradd --base-dir /var/lib/dremio --system --gid dremio dremio && \
+    chown -R dremio:dremio /opt/dremio/data /var/run/dremio /var/log/dremio /var/lib/dremio && \
+    if [ -z "$DOWNLOAD_URL" ]; then \
+        echo "DOWNLOAD_URL is not set" && exit 1; \
+    fi && \
+    wget -q "$DOWNLOAD_URL" -O dremio.tar.gz && \
+    tar vxfz dremio.tar.gz -C /opt/dremio --strip-components=1 && \
+    rm -rf dremio.tar.gz
 
+    
 EXPOSE 80
 #EXPOSE 9047/tcp
 EXPOSE 31010/tcp
